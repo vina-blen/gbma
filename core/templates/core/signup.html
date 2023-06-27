@@ -1,0 +1,147 @@
+{% extends 'core/base.html' %}
+
+{% load static %}
+
+{% block title%} Sign Up {% endblock %}
+
+{% block content %}
+<!-- Section: Design Block -->
+<div class="container">
+  <nav class="navbar navbar-expand-lg navbar-light">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">
+        <img src="{% static "logo.png" %}" alt="icon" width="60" height="60" class="d-inline-block align-text-bottom">
+          PriList
+      </a>
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item">
+          <a class="nav-link" aria-current="page" href="#">About</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">Contact</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+</div>
+<section class= "spacer-first section-first layer-waves ">
+  <!-- Jumbotron -->
+  <div class="px-4 py-5 md-5 text-center text-lg-start">
+    <div class="container">
+      <div class="row gx-lg-3 align-items-center">    
+        <div class="col-lg-6 mb-5 mb-lg-0" style="color: white">
+          <h1 class="display-3 fw-bold ls-tight" style="margin-top: 200px">
+              Find the Best Deals and Save with PriList
+          </h1>
+          <p>
+              Welcome to PriList, the ultimate shopping aggregator and comparison website. With our platform, you can easily compare prices and find the best deals on products from various online retailers.
+              <br /><br />
+              Join PriList now and start saving time and money on your online shopping. Compare, shop, and save with PriList!
+          </p>
+        </div>
+        <div class="col-lg-1 mb-5 mb-lg-0">
+        </div>
+        <div class="col-lg-5 mb-5 mb-lg-0">
+          <div class="card shadow custom-card border-0">
+            <div class="card-body py-5 px-md-5">
+              <form method="post" action="{% url 'signup' %}" id="signin-form" class="needs-validation" novalidate>
+                {% csrf_token %}
+                <div class="h1 text-center mb-4" style="color: #00B4D8;">
+                  Sign Up
+                </div>
+                <!-- Username input
+                <div class="form-group form-floating mb-4">
+                  <input type="text" name="username" class="form-control form-control-lg" placeholder="Username" required>
+                  <label for="username"><i class="bi bi-person"></i> Username</label>
+                  <div class="invalid-feedback">
+                    Please choose a username.
+                  </div>
+                </div> -->
+
+                <div class="form-group form-floating mb-4">
+                  <input type="text" name="{{ form.username.name }}" id="{{ form.username.id_for_label }}" class="form-control form-control-lg {% if form.username.errors %}is-invalid{% endif %}" placeholder="Username" required>
+                  <label for="{{ form.username.id_for_label }}" class="form-label"><i class="bi bi-person"></i> Username</label>
+                  {% for error in form.username.errors %}
+                  <div class="invalid-feedback">{{ error }}</div>
+                  {% endfor %}
+                </div>
+                <!-- Email input 
+                <div class="form-group form-floating mb-4">
+                  <input type="email" name="email" class="form-control form-control-lg" placeholder="Email" required>
+                  <label for="email"><i class="bi bi-at"></i> Email</label>
+                  <div class="invalid-feedback">
+                    Please enter a valid email address.
+                  </div>
+                </div>  -->
+
+                <div class="form-group form-floating mb-4">
+                  <input type="email" name="{{ form.email.name }}" id="{{ form.email.id_for_label }}" class="form-control form-control-lg {% if form.email.errors %}is-invalid{% endif %}" placeholder="Email" required>
+                  <label for="{{ form.email.id_for_label }}" class="form-label"><i class="bi bi-at"></i> Email</label>
+                  {% for error in form.email.errors %}
+                  <div class="invalid-feedback">{{ error }}</div>
+                  {% endfor %}
+                </div>
+                
+                
+                <!-- Password input
+                <div class="form-group form-floating mb-4">
+                  <input type="password" name="password"  class="form-control form-control-lg" placeholder="Password" required>
+                  <label for="password"><i class="bi bi-key"></i> Password</label>
+                  <div class="invalid-feedback">
+                    Please enter a password.
+                  </div>
+                </div> -->
+                <div class="form-group form-floating mb-4">
+                  <input type="password" name="{{ form.password.name }}" id="{{ form.password.id_for_label }}" class="form-control form-control-lg {% if form.password.errors %}is-invalid{% endif %}" placeholder="Password" required>
+                  <label for="{{ form.password.id_for_label }}" class="form-label"><i class="bi bi-key"></i> Password</label>
+                  {% for error in form.password.errors %}
+                  <div class="invalid-feedback">{{ error }}</div>
+                  {% endfor %}
+                </div>
+                
+
+                <div class="text-center mb-5">
+                  By clicking "Sign Up", you agree to the<br>
+                  <a href="#">Terms & Conditions</a>.
+                </div>
+
+                <div class="d-grid gap-2 col-6 mx-auto">
+                    <button class="btn btn-primary btn-lg rounded-pill" type="submit">Sign Up</button>
+                </div>
+
+                <div class="text-center ">
+                  Already have an account?
+                  <a href="/">Sign In now</a>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+  <script>
+    (function () {
+      'use strict'
+    
+      // Fetch all the forms we want to apply custom Bootstrap validation styles to
+      var forms = document.querySelectorAll('.needs-validation')
+    
+      // Loop over them and prevent submission
+      Array.prototype.slice.call(forms)
+        .forEach(function (form) {
+          form.addEventListener('submit', function (event) {
+            if (!form.checkValidity()) {
+              event.preventDefault()
+              event.stopPropagation()
+            }
+    
+            form.classList.add('was-validated')
+          }, false)
+        })
+    })()
+  </script>
+{% endblock %}

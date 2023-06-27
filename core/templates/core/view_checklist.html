@@ -1,0 +1,509 @@
+{% extends 'core/base.html' %}
+
+{% load static %}
+
+{% block title%} My Checklists {% endblock %} 
+
+{% load custom_filters %}
+
+{% block content %}
+<!-- Section: Design Block -->
+<style>
+  .form-check-input:checked[type="checkbox"] {
+    background-color: #00B4D8;
+  }
+  .form-check-input[type="checkbox"] {
+    width: 1.25em;
+    height: 1.25em;
+  }
+  
+  h1 {
+    font-family: 'Open Sans ExtraBold';
+    color:#00B4D8;
+    margin-top: 10px;
+    margin-left: 20px;
+    margin-bottom: 10px;
+  }
+  .navbar {
+      height: 56px;
+      background-color: #ffffff;
+  }
+  .navbar-nav .nav-link {
+      color: #00B4D8;
+  }   
+  .card-img-top {
+    height: 150px;
+    width: 150px;
+    object-fit: cover;
+  }
+  ::-webkit-scrollbar {
+    width: 12px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    background-color: #f1f1f1;
+    border-radius: 10px;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background-color: #d4d4d4;
+    border-radius: 10px;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: #bababa;
+  }
+
+  .quantity-input {
+    text-align: center;
+  }
+  
+  .border-gray {
+    border-color: gray;
+  }
+  
+</style>
+  <nav class="navbar shadow navbar-expand-lg navbar-light">
+      <div class="container-fluid">
+          <a class="navbar-brand" href="#">
+              <img src="{% static "logo.png" %}" alt="icon" width="50" height="50" class="d-inline-block align-text-center" style="margin-top:-9px" >
+          </a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarNav">
+              <ul class="navbar-nav ms-auto">
+                  <li class="nav-item">
+                      <a class="nav-link" href="{% url 'my_checklists' %}">My Checklists</a>
+                  </li>
+                  <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDarkDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        {{ user.get_username }}
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDarkDropdownMenuLink">
+                      <li><a class="dropdown-item" href="/comparison">Comparison</a></li>
+                      <li><a class="dropdown-item" href="/contact">Contact</a></li>
+                      <li><a class="dropdown-item" href="{% url 'user_logout' %}">Logout</a></li>
+                    </ul>
+                </li>
+              </ul>
+          </div>
+      </div>
+  </nav>
+
+
+<h1 >Checklist</h1>
+
+<!--Container-->
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-sm-6">
+      <div class="card border-light mb-3" style="height: 870px;">
+        <div class="card-header h3 bg-white">{{ checklist.name }}</div>
+        <div class="card-header bg-white">{{ checklist.description }}</div>
+        <div class="card-body py-2">  
+          <div class="mb-3 py-auto">
+            <div class="row g-0 align-items-center">
+              <div class="col-md-1 text-center">
+                <input type="checkbox" id="check-all" class="form-check-input">
+              </div>
+              <div class="col-md-5 px-4">
+                <label class="form-check-label">Product</label>
+              </div>
+              <div class="col-md-2 text-center">
+                <label class="form-check-label">Quantity</label>
+              </div>  
+              <div class="col-md-3 px-5">
+                <label class="form-check-label">Total Price</label>
+              </div>
+              <div class="col-md-1">
+                <label class="form-check-label"></label>
+              </div>
+            </div>
+          </div>
+          <hr>
+          <div class="card-body" id="checklist-container" style="overflow-y: scroll; max-height: 500px;">
+            {% for item in checklist_items %}
+              <div class="card mb-3 py-2 border-info{% if not item.is_checked %}bg-light{% endif %}" id="item-{{ item.id }}">
+                  <div class="row g-0 align-items-center">
+                      <div class="col-md-1 text-center">
+                          <input type="checkbox" id="item-is-checked-{{ item.id }}" class="form-check-input item-checkbox is_checked" name="item" {% if item.is_checked %}checked{% endif %} onchange="update_item_checked({{ item.pk }})">
+                      </div>
+                      <div class="col-md-1">
+                          <img src="{{ item.product.image.url }}" class="img-fluid">
+                      </div>
+                      <div class="col-md-4">
+                        <div class="card-body {% if not item.is_checked %}text-muted{% endif %}">
+                          <p class="card-title product-name h6" {% if not item.is_checked %}style="color:gray;"{% endif %}>{{ item.product.name }}</p>
+                          <p class="card-text product-price" {% if not item.is_checked %}style="color:gray;"{% endif %} id="item-price-{{ item.id }}">{{ item.product.price|currency }}</p>
+                        </div>
+                      </div>
+                      <div class="col-md-2 text-center">
+                          <div class="card-body">
+                              <input class="text-center quantity" type="number" id="quantity" name="quantity" min="1" max="100" value="{{ item.quantity }}" {% if not item.is_checked %}disabled{% endif %} onchange="addItemQty({{ item.pk }})">
+                          </div>
+                          {% comment %} <div class="input-group quantity">
+                            <button class="btn btn-outline-secondary decrement-button" type="button" onclick="decrement()">-</button>
+                            <input class="form-control quantity-input" type="number" value="1" min="1">
+                            <button class="btn btn-outline-secondary increment-button" type="button" onclick="increment()">+</button>
+                          </div> {% endcomment %}
+                          
+                      </div>
+                      <div class="col-md-3 px-5">
+                          <div class="card-body">
+                            <p class="card-text total-price" id="total-price" {% if not item.is_checked %}style="color: gray;"{% endif %}> {{ item.product.price|mul:item.quantity|currency }}</p>
+                          </div>
+                      </div>
+                      <div class="col-md-1 ">
+                        <div class="card-body">
+                          <i class="bi bi-trash-fill remove-item" id={{item.id}} style="cursor: pointer; font-size: 1.2em; color: #dc3545;" 
+                              data-delete-url="{% url 'delete_item' %}"
+                              data-item-id="{{ item.id }}"
+                              onmouseover="this.style.color='#E44B5B'" 
+                              onmouseout="this.style.color='#D12335'">
+                          </i>
+                        </div>
+                    </div>
+                  </div>
+              </div>
+            {% endfor %}
+          </div>
+          
+
+          <div class="card" style="margin-top:50px; font-family: Roboto;">
+            <div class="row g-0 align-items-center mt-3 text-center fs-6">
+              <div class="col-md-6">
+                  Total Items
+              </div>
+              <div class="col-md-2">
+                  Total Quantity
+              </div>
+              <div class="col-md-3">
+                  Summary Price
+              </div>
+            </div>
+            <div class="row g-0 align-items-center mt-3 mb-3 text-center"  style=" font-family: Roboto; font-size: 18px;">
+              <div class="col-md-6">
+                  <p class="card-text" id="summary-checked-items">
+                    {{ summary.items }}
+                  </p>
+              </div>
+              <div class="col-md-2">
+                  <p class="card-text" id="summary-quantity">
+                    {{ summary.quantity }}
+                  </p>
+              </div>
+              <div class="col-md-3">
+                  <p class="card-text text-info fs-4" id="summary-price" >
+                    {{ summary.price|currency }}
+                  </p>
+              </div>
+            </div>
+          </div>
+    
+          <!--Buttons for checkout and save list-->
+          <div class="row g-0 align-items-center mt-3 mb-3 text-center" >                      
+            <div class="d-grid gap-2 d-md-inline-block " >
+              <button class="btn btn-info col-md-4" type="button" onclick="goToMyChecklists()">Save List</button>
+              <button class="btn btn-info col-md-4" type="button" onclick="goToCheckout()">Checkout</button>
+            </div>            
+          </div>
+
+        </div>
+      </div>      
+    </div>
+    
+    <div class="col-sm-6">
+      <div class="card border-light mb-3" style="height: 870px;">
+        <div class="card-header border-light bg-white h3 d-flex justify-content-between align-items-center">
+          {% with products|length as list_length %}
+          <span>Products:{{ list_length }}</span>
+          {% endwith %}
+          <div>
+            <div class="input-group mb-3" style="margin-top:10px">
+              <input type="text" class="form-control" style="max-width: 300px;" placeholder="Search Accross Stores">
+              <button class="btn btn-outline-secondary" type="button" id="button-addon2"><i class="bi bi-search" onclick="scrapeProducts()"></i></button>
+            </div>
+          </div>
+          <div>
+            <form action="" method="GET">
+              <div class="form-row">
+                <div class="input-group mb-3" style="margin-top:10px"> 
+                  <input id="search" type="text" class="form-control" style="max-width: 300px;" placeholder="Search..." name="search">
+                  <button class="btn btn-outline-secondary" type="submit" id="button-addon3"><i class="bi bi-search" onclick="searchProducts()"></i></button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+        <div class="card-body p-2" style="overflow-y:scroll; overflow-x: hidden; max-height: 870px;">
+          {% for product in products %}
+            {% if forloop.counter0|divisibleby:4 %}
+              <div class="row">
+            {% endif %}
+            <div class="col-sm-3">
+              <div class="card mb-3" style="height:320px;">
+                <div class="card-body">
+                  <div class="text-center">
+                        <img src="{{ product.image.url }}" class="card-img-top mx-auto" alt="{{ product.name }}">
+                  </div>
+                  <p class="card-text text-start">{{ product.name|slice:": 35" }}{% if product.name|length > 35 %}...{% endif %}</p>
+                  <p class="card-text text-start fw-light" style="font-size:12px">{{ product.store.name }}</p>
+                  <div class="d-flex justify-content-between">
+                    <div class="text-info" style="font-size:20px; padding-top:12px">₱{{ product.price }}</div>
+                    <div class="text-end">
+                      <i class="bi bi-plus-square-fill" id={{product.pk}} style="cursor: pointer; font-size: 2.0em; color: #00B4D8;" 
+                        onclick="addItem({{product.pk}}, {{checklist.pk}})" 
+                        onmouseover="this.style.color='#0091ad'" 
+                        onmouseout="this.style.color='#00B4D8'">
+                      </i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {% if forloop.counter|divisibleby:4 or forloop.last %}
+              </div>
+            {% endif %}
+            {% empty %}
+              <p>No products available.</p>
+            {% endfor %}
+        </div>
+      </div>
+    </div>
+    
+  </div>
+</div>
+
+<script>
+  $(document).ready(function () {
+    $(".remove-item").click(function () {
+      var itemId = $(this).data("item-id");
+      var deleteUrl = $(this).data("delete-url");
+      $.ajax({
+        type: "GET",
+        url: deleteUrl,
+        data: {
+          item_id: itemId
+        },
+        success: function (response) {
+          // Remove the deleted item card from the page
+          $("#" + itemId).parent().parent().remove();
+          location.reload();
+        },
+        error: function (response) {
+          // Handle the error, e.g. show an error message
+          console.log(response);
+        }
+      });
+    });
+  });
+
+  //could be improved to be dynamic
+  function goToMyChecklists(){
+    window.location.href="{% url 'my_checklists' %}"
+  }
+
+  function goToCheckout(){
+    window.location.href="{% url 'checkout' %}"
+  }
+
+  function addItem(productPk, checklistPk) {
+    $.ajax({
+      type: "POST",
+      url: "{% url 'add_to_checklist' %}",
+      data: {
+        'product_pk': productPk,
+        'checklist_pk': checklistPk,
+        'csrfmiddlewaretoken': '{{ csrf_token }}'
+      },
+      dataType: 'json',
+      success: function(data) {
+        if (data.success) {
+          var item_id = data.item_id;
+          var item_quantity = data.item_quantity;
+          var message = data.message;
+          $('#message').text(message);
+          var item_selector = '[item-id="' + item_id + '"]';
+          $(item_selector + ' .quantity').text(item_quantity);
+
+          //if(data.item_html !== null)
+            //location.reload();
+            //var checklistContainer = $('#checklist-container');
+            //checklistContainer.append(data.item_html);
+            
+          location.reload();
+        } else {
+          alert(data.message);
+        }
+      },
+      error: function(xhr, errmsg, err) {
+        alert(errmsg);
+      }
+    });
+  }
+  
+  function addItemQty(list_item_pk) {
+    $.ajax({
+      type: "POST",
+      url: "{% url 'add_item_quantity' %}",
+      data: {
+        'item_pk': list_item_pk,
+        'csrfmiddlewaretoken': '{{ csrf_token }}'
+      },
+      dataType: 'json',
+      success: function(data) {
+        if (data.success) {
+          var item_id = data.item_id;
+          var item_quantity = data.item_quantity;
+          var item_selector = '[item-id="' + item_id + '"]';
+          $(item_selector + ' .quantity').text(item_quantity);
+          updateTotalPrice();
+        } else {
+          alert(data.message);
+        }
+      },
+      error: function(xhr, errmsg, err) {
+        alert(errmsg);
+      }
+    });
+  }
+
+  function update_item_checked(list_item_pk) {
+    $.ajax({
+      type: "POST",
+      url: "{% url 'update_item_checked' %}",
+      data: {
+        'item_pk': list_item_pk,
+        'csrfmiddlewaretoken': '{{ csrf_token }}'
+      },
+      dataType: 'json',
+      success: function(data) {
+        if (data.success) {
+          var item_id = data.item_id;
+          var item_is_checked = data.item_is_checked;
+          var item_selector = '[item-id="' + item_id + '"]';
+          $(item_selector + ' .item-checkbox');
+          item_checkbox.prop('checked', item_is_checked);
+          updateTotalPrice();
+        } else {
+          alert(data.message);
+        }
+      },
+      error: function(xhr, errmsg, err) {
+        alert(errmsg);
+      }
+    });
+  }
+
+  const checkboxes = document.getElementsByClassName('item-checkbox');
+
+  // Loop through all checkboxes and add an event listener to each of them
+  for (let i = 0; i < checkboxes.length; i++) {
+    checkboxes[i].addEventListener('change', handleCheckboxChange);
+  }
+
+  // add click event listener to the check-all checkbox
+  document.getElementById('check-all').addEventListener('click', function () {
+    const itemCheckboxes = document.querySelectorAll('.item-checkbox');
+    for (let i = 0; i < itemCheckboxes.length; i++) {
+      itemCheckboxes[i].checked = this.checked;
+    }
+    updateTotalPrice();
+  });
+
+  function handleCheckboxChange() {
+    // Get the card element containing the checkbox
+    const card = this.closest('.card');
+    
+    // Get the name, price, and quantity elements
+    const name = card.querySelector('.product-name');
+    const price = card.querySelector('.product-price');
+    const quantity = card.querySelector('.quantity');
+    const totalPrice = card.querySelector('.total-price');
+
+    // If the checkbox is unchecked, change the card's border color to gray, change the text color of the name, price, and total price elements to gray, and disable the quantity input. Otherwise, change them back to their original state.
+    if (this.checked) {
+      card.classList.add('border-info');
+      name.style.color = '';
+      price.style.color = '';
+      quantity.disabled = false;
+      totalPrice.style.color = '';
+    } else {
+      card.classList.remove('border-info');
+      name.style.color = 'gray';
+      price.style.color = 'gray';
+      quantity.disabled = true;
+      totalPrice.style.color = 'gray';
+    }
+    // Call the updateTotalPrice function
+    updateTotalPrice();
+  }
+
+  // define function to update total price
+  function updateTotalPrice() {
+    var totalCheckedItems = 0;
+    var totalQuantity = 0;
+    var totalPriceSum = 0;
+  
+    var checkedItemCheckboxes = document.querySelectorAll('.item-checkbox:checked');
+    checkedItemCheckboxes.forEach(function (checkbox) {
+      var card = checkbox.closest('.card');
+      var quantity = parseInt(card.querySelector('.quantity').value);
+      var itemPrice = parseFloat(card.querySelector('.product-price').innerText.replace(/[^0-9\.]/g, ''));
+      var totalPrice = itemPrice * quantity;
+      totalCheckedItems++;
+      totalPriceSum += totalPrice;
+      totalQuantity += quantity;
+    });
+    // Set the value of the summary-items element to the sum
+    var summaryItemsElement = document.getElementById('summary-checked-items');
+    summaryItemsElement.innerText = totalCheckedItems;
+
+    // Set the value of the summary-quantity element to the sum
+    var summaryQtyElement = document.getElementById('summary-quantity');
+    summaryQtyElement.innerText = totalQuantity;
+
+    // Set the value of the summary-price element to the sum
+    var summaryPriceElement = document.getElementById('summary-price');
+    summaryPriceElement.innerText = totalPriceSum.toLocaleString('en-PH', { style: 'currency', currency: 'PHP' });
+  }
+
+  function scrapeProducts() {
+      $.ajax({
+          url: "{% url 'scrape_products' %}",
+          success: function(response) {
+              console.log(response);
+              alert('Scraping successful!');
+          },
+          error: function(xhr, status, error) {
+              console.log(xhr.responseText);
+              alert('Scraping failed!');
+          }
+      });
+  }
+
+  function searchProducts() {
+    //var checklist_id = checklist.pk;
+    var search = document.getElementById("search").value;
+    alert(search +" is not a product!");
+    $.ajax({
+        url: "{% url 'search_products'%}",
+        data: {
+          'search': search,
+          
+        },
+        success: function(response) {
+          console.log("Here I am searching producs");
+            console.log(response);
+            alert('search works!');
+        },
+        error: function(xhr, status, error) {
+            console.log(xhr.responseText);
+            alert('search failed!');
+        }
+    });
+  }
+ 
+</script>
+{% endblock %}

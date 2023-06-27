@@ -1,0 +1,140 @@
+.section-first{
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 900px;
+}
+
+.spacer-first {
+    aspect-ratio: 960/400;
+    width: 100%;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+}
+
+section {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 300px;
+    padding: 100px;
+}
+
+.spacer {
+    aspect-ratio: 960/300;
+    width: 100%;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+}
+
+.layer-waves
+{
+    background-image: url('./layered-waves.svg');
+}
+
+.layer-peaks
+{
+    background-image: url('./layered-peaks.svg');
+}
+
+.layer-hole
+{
+    background-image: url('./layered-hole.svg');
+}
+
+
+/* .bg-image {
+    background-size: cover;
+    background-position: center;
+    height: 100vh;
+  } */
+
+.input-icon{
+    font-size: 24px;
+    color: #595959;
+}
+
+.color-gray{
+    color: #595959;
+}
+
+.custom-card {
+    width: 450px;
+}
+
+.navbar-brand
+{
+    font-family: 'Open Sans ExtraBold';
+    color:#00B4D8;
+    font-size: 45px !important;
+}
+
+.navbar-brand:visited, .navbar-brand:hover
+{
+    color:#00B4D8;
+    text-decoration: none;
+
+}
+
+.navbar-nav, .nav-item, .nav-link > li
+{
+    font-family: 'Open Sans';
+    font-size: 20px !important;
+    padding-left:30px;
+    padding-right:30px;
+    text-decoration: none;
+}
+
+.nav-link
+{
+    color:#00B4D8;
+}
+
+.nav-link:hover 
+{
+    color: #FFD13F;
+    text-decoration: none;
+}
+
+.custom-btn {
+    background-color: blue;
+    color: white;
+    outline: none !important; 
+    outline-style: none; 
+}
+  
+.custom-btn:hover {
+    background-color: yellow;
+    color: white;
+}
+
+a:link {
+    color: #00B4D8;
+    background-color: transparent;
+    text-decoration: none;
+}
+
+a:visited {
+    color: #00B4D8;
+    background-color: transparent;
+    text-decoration: none;
+}
+a:hover {
+    color: #FFD13F;
+    background-color: transparent;
+    text-decoration: none;
+}
+
+a:active {
+    color: #FFD13F;
+    background-color: transparent;
+    text-decoration: none;
+}
+
+.my-link:hover {
+    text-decoration: none;
+}

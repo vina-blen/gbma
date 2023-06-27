@@ -1,0 +1,60 @@
+{% extends 'core/base.html' %}
+{% load custom_filters %}
+{% block content %}
+
+  <h1>{{ checklist.name }}</h1>
+  <table>
+    <thead>
+      <tr>
+        <th>Product</th>
+        <th>Price</th>
+        <th>Quantity</th>
+        <th>Total Price</th>
+        <th>Checked</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for product in products %}
+      <tr>
+        <td>{{ product.product.name }}</td>
+        <td>{{ product.product.price }}</td>
+        <td>
+          <input type="number" name="quantity" value="{{ product.quantity }}" min="1" data-product-id="{{ product.pk }}">
+        </td>
+        <td>
+          <span class="total-price">{{ product.product.price|mul:product.quantity }}</span>
+        </td>
+        <td>
+          <input type="checkbox" name="is_checked" {% if product.is_checked %}checked{% endif %} data-product-id="{{ product.pk }}">
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}
+<script>
+  function updateTotalPrice(event) {
+    const input = event.target;
+    const productId = input.getAttribute('data-product-id');
+    const totalSpan = input.parentNode.nextElementSibling.querySelector('.total-price');
+    const price = parseFloat(input.parentNode.previousElementSibling.textContent);
+    const quantity = parseInt(input.value);
+    const total = price * quantity;
+    totalSpan.textContent = total.toFixed(2);
+    fetch(`/update-product/${productId}/?quantity=${quantity}&is_checked=${input.checked}`, {
+      method: 'PATCH',
+    })
+    .then(response => response.json())
+    .then(data => console.log(data))
+    .catch(error => console.error(error));
+  }
+
+  const quantityInputs = document.querySelectorAll('input[name="quantity"]');
+  const isCheckboxes = document.querySelectorAll('input[name="is_checked"]');
+  quantityInputs.forEach(input => {
+    input.addEventListener('change', updateTotalPrice);
+  });
+  isCheckboxes.forEach(input => {
+    input.addEventListener('change', updateTotalPrice);
+  });
+</script>

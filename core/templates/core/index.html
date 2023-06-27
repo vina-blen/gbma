@@ -1,0 +1,170 @@
+{% extends 'core/base.html' %}
+
+{% load static %}
+
+{% block title%} Welcome {% endblock %}
+
+{% block content %}
+<!-- Section: Design Block -->
+<div class="container">
+	<nav class="navbar navbar-expand-lg navbar-light">
+		<div class="container-fluid">
+			<a class="navbar-brand" href="#">
+				<img src="{% static "logo.png" %}" alt="icon" width="60" Fight="60" class="d-inline-block align-text-bottom">
+				PriList
+			</a>
+			<ul class="navbar-nav ms-auto">
+				<li class="nav-item">
+					<a class="nav-link" aria-current="page" href="#about" onclick="scrollToFooter()">About</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" aria-current="page" href="/contact">Contact</a>
+				</li>
+			</ul>
+		</div>
+	</nav>
+</div>
+<section class= "spacer-first section-first layer-waves">
+  <!-- Jumbotron -->
+  	<div class="px-4 py-5 md-5 text-center text-lg-start">
+    	<div class="container">
+      		<div class="row gx-lg-3 align-items-center">    
+        		<div class="col-lg-6 mb-5 mb-lg-0" style="color: white">
+					<h1 class="display-3 fw-bold ls-tight" style="margin-top: 200px">
+						Find the Best Deals and Save with PriList
+					</h1>
+					<p>
+						Welcome to PriList, the ultimate shopping aggregator and comparison website. With our platform, you can easily compare prices and find the best deals on products from various online retailers.
+						<br /><br />
+						Join PriList now and start saving time and money on your online shopping. Compare, shop, and save with PriList!
+					</p>
+        		</div>
+        		<div class="col-lg-1 mb-5 mb-lg-0"></div>
+					<div class="col-lg-5 mb-5 mb-lg-0">
+						<div class="card-body py-5 px-md-5 card shadow custom-card border-0">
+							<form method="post" id="signin-form" class="needs-validation" novalidate>
+								{% csrf_token %}
+								<div class="h1 text-center mb-4" style="color: #00B4D8;">
+									Sign In to PriList
+								</div>
+								<!-- Email input -->
+								<div class="form-group form-floating mb-4">
+									<input type="email" name="{{ form.email.name }}" id="{{ form.email.id_for_label }}" class="form-control form-control-lg {% if form.email.errors %}is-invalid{% endif %}" placeholder="Email" required>
+									<label for="{{ form.email.id_for_label }}" class="form-label"><i class="bi bi-at"></i> Email</label>
+									{% for error in form.email.errors %}
+									<div class="invalid-feedback">{{ error }}</div>
+									{% endfor %}
+								  </div>
+	
+								<!-- Password input -->
+								<div class="form-group form-floating mb-4">
+									<input type="password" name="{{ form.password.name }}" id="{{ form.password.id_for_label }}" class="form-control form-control-lg {% if form.password.errors %}is-invalid{% endif %}" placeholder="Password" required>
+									<label for="{{ form.password.id_for_label }}" class="form-label"><i class="bi bi-key"></i> Password</label>
+									{% for error in form.password.errors %}
+									<div class="invalid-feedback">{{ error }}</div>
+									{% endfor %}
+								</div>
+
+								<div class="mb-5 text-right text-end">
+									<a href="#">Forgot Password?</a>
+								</div>
+
+								<!-- Submit button -->
+								<div class="d-grid gap-2 col-6 mx-auto">
+									<button class="btn btn-primary btn-lg rounded-pill" type="submit">Sign In</button>
+								</div>
+								<hr>
+
+								<div class="text-center ">
+									Don't have an account?
+									<a href="/signup">Sign Up now</a>
+								</div>
+							</form>
+						</div>
+					</div>
+      			</div>
+    		</div>
+  		</div>
+	</div>
+</section>
+<section class="spacer layer-peaks">
+	<div >
+		<h1>TODO</h1>
+	</div>
+</section>
+<footer id="footer" class="text-center text-lg-start text-dark" style="background-color: white;">	
+      <div class="container text-center text-md-start mt-5">
+        <!-- Grid row -->
+        <div class="row">
+          <!-- Grid column -->
+			<div class="col-md-3 col-lg-4 col-xl-3 mx-auto mb-4">
+				<!-- Content -->
+				<h6 class="text-uppercase fw-bold">About Us</h6>
+				<hr	class="mb-4 mt-0 d-inline-block mx-auto" style="width: 100px;"/>
+				<p>
+					A mote of dust suspended in a sunbeam permanence of the stars dispassionate extraterrestrial observer hydrogen atoms how far away Apollonius of Perga?
+				</p>
+			</div>
+          	<!-- Grid column -->
+			<div class="col-md-2 col-lg-2 col-xl-2 mx-auto mb-4">
+				<!-- Links -->
+				<h6 class="text-uppercase fw-bold">Legal</h6>
+				<hr	class="mb-4 mt-0 d-inline-block mx-auto" style="width: 100px;"/>
+				<p><a href="#!" class="text-dark">Terms & Conditions</a></p>
+				<p><a href="#!" class="text-dark">Privacy Policy</a></p>
+				<p><a href="#!" class="text-dark">Terms of Use</a></p>
+			</div>
+
+          	<!-- Grid column -->
+			<div class="col-md-3 col-lg-2 col-xl-2 mx-auto mb-4">
+				<!-- Links -->
+				<h6 class="text-uppercase fw-bold">Follow Us</h6>
+				<hr class="mb-4 mt-0 d-inline-block mx-auto" style="width: 100px;"/>
+				<p><a href="#!" class="text-dark" style="text-decoration:none;"><i class="bi bi-facebook"></i> Facebook</a></p>
+				<p><a href="#!" class="text-dark" style="text-decoration:none;"><i class="bi bi-instagram"></i> Instagram</a></p>
+			</div>
+          
+			<!-- Grid column -->
+			<div class="col-md-4 col-lg-3 col-xl-3 mx-auto mb-md-0 mb-4">
+				<!-- Links -->
+				<h6 class="text-uppercase fw-bold">Contact</h6>
+				<hr	class="mb-4 mt-0 d-inline-block mx-auto" style="width: 100px;"/>
+				<p><i class="bi bi-geo-alt mr-3"></i> Cebu City, Philippines</p>
+				<p><i class="bi bi-envelope mr-3"></i> prilist_ph@gmail.com</p>
+			</div>
+        </div>
+      </div>
+	    <!-- Copyright -->
+    <div class="text-center p-3">
+      <a class="text-dark" href="">PriList © 2023</a>
+    </div>
+    <!-- Copyright -->
+  </footer>
+<script>
+(function () {
+	'use strict'
+
+	// Fetch all the forms we want to apply custom Bootstrap validation styles to
+	var forms = document.querySelectorAll('.needs-validation')
+
+	// Loop over them and prevent submission
+	Array.prototype.slice.call(forms)
+	.forEach(function (form) {
+		form.addEventListener('submit', function (event) {
+		if (!form.checkValidity()) {
+			event.preventDefault()
+			event.stopPropagation()
+		}
+
+		form.classList.add('was-validated')
+		}, false)
+	})
+})()
+
+function scrollToFooter() {
+	document.querySelector('#footer').scrollIntoView({
+		behavior: 'smooth'
+	});
+}
+</script>
+{% endblock %}

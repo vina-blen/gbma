@@ -1,0 +1,8 @@
+<form method="post">
+    {% csrf_token %}
+    <label for="name">Name:</label>
+    <input type="text" id="name" name="name">
+    <label for="items">Items:</label>
+    <textarea id="items" name="items"></textarea>
+    <button type="submit">Create Checklist</button>
+  </form>

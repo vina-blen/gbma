@@ -1,0 +1,347 @@
+{% extends 'core/base.html' %}
+
+{% load static %}
+
+{% block title%} My Checklists {% endblock %}
+
+{% block content %}
+<!-- Section: Design Block -->
+<style>
+    .navbar {
+        height: 56px;
+        background-color: #ffffff;
+    }
+    .navbar-nav .nav-link {
+        color: #00B4D8;
+    }   
+    h1 {
+        font-family: 'Open Sans ExtraBold';
+        color:#00B4D8;
+        font-size: 45px !important;
+        margin-left: -50px;
+        padding-bottom: 20px;
+    }
+    .card-body {
+        background-color: #385f83;
+        height: 250px;
+        width: 250px;
+        overflow: hidden;
+        padding: 20px;
+    }
+    .thumbnail-link:link {
+        color: #4d4c4c;
+        background-color: transparent;
+        text-decoration: none;
+    }
+
+    .thumbnail-link:visited {
+        color: #4d4c4c;
+        background-color: transparent;
+        text-decoration: none;
+    }
+    .thumbnail-link:hover {
+        color: #666666;
+        background-color: transparent;
+        text-decoration: none;
+    }
+
+    .thumbnail-link:active {
+        color: #4d4c4c;
+        background-color: transparent;
+        text-decoration: none;
+    }
+    .card {
+        background-color: #f4dc72 !important; 
+    }
+
+    .card:hover {
+        background-color: #f0d043 !important; 
+    }
+
+    .card-wrapper {
+      width: calc(20% - 16px); /* set the width of each card to 1/4 of the container width minus the margin */
+      margin: 20px; /* set margin around each card */
+    }
+  
+    .btn-outline-warning {
+        color: #f0d043 !important;
+    }
+      
+    .btn-outline-warning:hover {
+        color: rgb(255, 255, 255) !important;
+    }
+
+      
+    @media (max-width: 992px) {
+      .card-wrapper {
+        width: calc(33.33% - 16px); /* set the width of each card to 1/3 of the container width minus the margin on smaller screens */
+      }
+    }
+  
+    @media (max-width: 768px) {
+      .card-wrapper {
+        width: calc(50% - 16px); /* set the width of each card to 1/2 of the container width minus the margin on the smallest screens */
+      }
+    }
+  
+    .card-container {
+      display: flex;
+      flex-wrap: wrap; /* make the cards wrap onto the next line when the screen width is reduced */
+      justify-content: flex-start;
+      align-items: flex-start;
+    }
+</style>
+    <nav class="navbar shadow navbar-expand-lg navbar-light">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <img src="{% static "logo.png" %}" alt="icon" width="50" height="50" class="d-inline-block align-text-center" style="margin-top:-9px" >
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" aria-current="page" href="">My Checklists</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDarkDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            {{ user.get_username }}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDarkDropdownMenuLink">
+                          <li><a class="dropdown-item" href="/comparison">Comparison</a></li>
+                          <li><a class="dropdown-item" href="/contact">Contact</a></li>
+                          <li><a class="dropdown-item" href="{% url 'user_logout' %}">Logout</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+<!-- Jumbotron -->
+
+<div class="px-4 py-5 md-5 text-center text-lg-start">
+    <div class="container">
+      <h1>My Checklists</h1>
+      <div class="d-flex justify-content-end">
+        <button type="button" class="btn btn-outline-warning btn-lg me-3 text-light" data-bs-toggle="modal" data-bs-target="#newListModal">
+            +
+        </button>
+      </div>
+      
+      <!-- Modal -->
+      <div class="modal fade" id="newListModal" tabindex="-1" aria-labelledby="newListModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="newListModalLabel">Create New Checklist</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <form method="post">
+                {% csrf_token %}
+                <div class="mb-3">
+                  <label for="name" class="form-label">Name:</label>
+                  <input type="text" class="form-control" id="name" name="name" required>
+                </div>
+                <div class="mb-3">
+                  <label for="description" class="form-label">Description:</label>
+                  <textarea class="form-control" id="description" name="description" rows="3" required></textarea>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                  <button type="submit" class="btn btn-primary">Create</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="card-container d-flex flex-wrap justify-content-start align-items-start">
+        {% for checklist in checklists %}
+            <div class="card-wrapper my-3">
+                <a href="{% url 'view_checklist' checklist.pk %}" class="card-body py-4 px-md-4 card shadow border-0 thumbnail-link" id="checklist-card-{{ checklist.item }}"> 
+                <h4>{{ checklist.name }}</h4>
+                <h6>{{ checklist.description }}</h6>
+                </a>
+            </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+    <!-- Context Menu -->
+    <style>
+      .menu {
+          position: absolute;
+          width: 200px;
+          padding: 2px;
+          margin: 0;
+          background: #ffffff;
+          z-index: 100;
+          border-radius: 3px;
+          box-shadow: 1px 1px 4px rgba(0,0,0,.2);
+          opacity: 0;
+          transform: translate(0, 15px) scale(.95);
+          transition: transform 0.1s ease-out, opacity 0.1s ease-out;
+          pointer-events: none;
+      }
+      
+      .menu-item {
+          display: block;
+          position: relative;
+          margin: 0;
+          padding: 0;
+          white-space: nowrap;
+      }
+      
+      .menu-btn { 
+          display: block;
+          color: #444;
+          font-family: 'Roboto', sans-serif;
+          font-size: 13px;
+          cursor: pointer;
+          border: 1px solid transparent;
+          white-space: nowrap;
+          padding: 6px 8px;
+          border-radius: 3px;
+      }
+      
+      button.menu-btn {
+          background: none;
+          line-height: normal;
+          overflow: visible;
+          /* -webkit-user-select: none;
+          -moz-user-select: none;
+          -ms-user-select: none; */
+          width: 100%;
+          text-align: left;
+      }
+      
+      a.menu-btn {
+          outline: 0 none;
+          text-decoration: none;
+      }
+      
+      .menu-text {
+          margin-left: 25px;
+      }
+      
+      .menu-btn .fa {
+          position: absolute;
+          left: 8px;
+          top: 50%;
+          transform: translateY(-50%);
+      }
+      
+      .menu-item:hover > .menu-btn { 
+          color: #444; 
+          outline: none; 
+          background-color: #d8d8d8;
+      }
+      
+      .menu-item-disabled {
+          opacity: .5;
+          pointer-events: none;
+      }
+      
+      .menu-item-disabled .menu-btn {
+          cursor: default;
+      }
+      
+      .menu-separator {
+          display:block;
+          margin: 7px 5px;
+          height:1px;
+          border-bottom: 1px solid #fff;
+          background-color: #aaa;
+      }
+      
+      .menu-item-submenu::after {
+          content: "";
+          position: absolute;
+          right: 6px;
+          top: 50%;
+          transform: translateY(-50%);
+          border: 5px solid transparent;
+          border-left-color: #808080; 
+      }
+      
+      .menu-item-submenu:hover::after {
+          border-left-color: #fff;
+      }
+      
+      .menu .menu {
+          top: 4px;
+          left: 99%;
+      }
+      
+      .menu-show,
+      .menu-item:hover > .menu {
+          opacity: 1;
+          transform: translate(0, 0) scale(1);
+          pointer-events: auto;
+      }
+      
+      .menu-item:hover > .menu {
+          transition-delay: 300ms;
+      }
+      </style>
+      <ul class="menu">
+          <li class="menu-item">
+              <button type="button" class="menu-btn">
+                  <i class="fa fa-edit"></i>
+                  <span class="menu-text">Rename</span>
+              </button>
+          </li>
+          <li class="menu-item">
+              <button type="button" class="menu-btn">
+                  <i class="fa fa-trash"></i>
+                  <span class="menu-text">Delete</span>
+              </button>
+          </li>
+      </ul>
+      <script>
+ 
+      {% comment %} {% for checklist in checklists %}
+      var checklistCard = document.getElementById("checklist-card-{{checklist.item}}");
+      checklistCard.addEventListener("contextmenu", onContextMenu);
+      {% endfor %} {% endcomment %}
+
+      let elements = document.querySelectorAll('.card-wrapper');
+
+      elements.forEach((item) => {
+        item.addEventListener('contextmenu', onContextMenu)
+      });
+  
+      var menu = document.querySelector('.menu');
+      
+      function showMenu(x, y){
+          menu.style.left = x + 'px';
+          menu.style.top = y + 'px';
+          menu.classList.add('menu-show');
+      }
+      
+      function hideMenu(){
+          menu.classList.remove('menu-show');
+      }
+      
+      function onContextMenu(e){
+          e.preventDefault();
+          showMenu(e.pageX, e.pageY);
+          document.addEventListener('mousedown', onMouseDown, false);
+      }
+      
+      function onMouseDown(e){
+          hideMenu();
+          document.removeEventListener('mousedown', onMouseDown);
+      }
+      
+      {% comment %} document.addEventListener('contextmenu', onContextMenu, false) {% endcomment %}
+      </script>
+      
+      
+
+
+{% endblock %}
